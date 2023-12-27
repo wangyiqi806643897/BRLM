@@ -16,7 +16,7 @@ import ResNet
 torch.set_default_tensor_type(torch.DoubleTensor)
 
 
-# 日志函数
+# Logger Function
 def get_logger(filename, verbosity=1, name=None):
     level_dict = {
         0: logging.DEBUG,
@@ -29,7 +29,7 @@ def get_logger(filename, verbosity=1, name=None):
         "[%(asctime)s][%(filename)s][line:%(lineno)d][%(levelname)s] %(message)s"
     )
     logger = logging.getLogger(name)
-    # 过滤掉debug信息
+    # debug information filtering
     logger.setLevel(level_dict[verbosity])
     fh = logging.FileHandler(filename, "w")
     fh.setFormatter(formatter)
@@ -40,19 +40,19 @@ def get_logger(filename, verbosity=1, name=None):
     return logger
 
 
-# 定义自定义的数据集类
+# Define a custom dataset class
 class MyDataset(Dataset):
     def __init__(self, data):
-        # 将768个属性转换成tensor
+        # Convert 768 attributes to tensor
         self.data = data.iloc[:, 2:].values.astype(float)
         self.data = torch.from_numpy(self.data)
-        # 将类别标签转换为整数形式
+        # Converts the category label to an integer
         self.labels = data.iloc[:, 1]
         label_encoder = LabelEncoder()
         self.labels = label_encoder.fit_transform(self.labels)
 
     def __len__(self):
-        return len(self.data)  # 获取样本数量
+        return len(self.data)  # Sample quantity obtained
 
     def __getitem__(self, index):
         sample = self.data[index]
