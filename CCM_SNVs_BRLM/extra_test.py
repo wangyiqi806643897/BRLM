@@ -16,7 +16,7 @@ import ResNet
 torch.set_default_tensor_type(torch.DoubleTensor)
 
 
-# 日志函数
+# logging function
 def get_logger(filename, verbosity=1, name=None):
     level_dict = {
         0: logging.DEBUG,
@@ -29,7 +29,7 @@ def get_logger(filename, verbosity=1, name=None):
         "[%(asctime)s][%(filename)s][line:%(lineno)d][%(levelname)s] %(message)s"
     )
     logger = logging.getLogger(name)
-    # 过滤掉debug信息
+    # debug information filtering
     logger.setLevel(level_dict[verbosity])
     fh = logging.FileHandler(filename, "w")
     fh.setFormatter(formatter)
@@ -40,19 +40,19 @@ def get_logger(filename, verbosity=1, name=None):
     return logger
 
 
-# 定义自定义的数据集类
+# Define a custom dataset class
 class MyDataset(Dataset):
     def __init__(self, data):
-        # 将768个属性转换成tensor
+        # Convert 768 attributes to tensor
         self.data = data.iloc[:, 2:].values.astype(float)
         self.data = torch.from_numpy(self.data)
-        # 将类别标签转换为整数形式
+        # Converts the category label to an integer
         self.labels = data.iloc[:, 1]
         label_encoder = LabelEncoder()
         self.labels = label_encoder.fit_transform(self.labels)
 
     def __len__(self):
-        return len(self.data)  # 获取样本数量
+        return len(self.data)  # Sample quantity obtained
 
     def __getitem__(self, index):
         sample = self.data[index]
@@ -60,7 +60,7 @@ class MyDataset(Dataset):
         return sample, labels
 
 
-# 设置随机种子及其他超参并指定训练显卡
+# Set random seeds and other hyperparameters and specify the training GPU
 batch_size = 32
 seed = 37
 device = 3
@@ -75,15 +75,15 @@ if torch.cuda.is_available():
 np.random.seed(seed)
 random.seed(seed)
 
-# 设置日志路径
+# Setting the log path
 log_path = "{}/extra_log.txt".format("log")
 logger = get_logger(log_path)
 
-# 读取数据
+# Reading data
 file_path = "data/GBM_entity_vectors.csv"
 data = pd.read_csv(file_path, header=None)
 
-# 划分数据集
+# Partition data set
 train_data, test_data = train_test_split(data, train_size=0.7, random_state=seed)
 extra_class3_data = test_data[test_data.iloc[:, 1] != "Class3"]
 class3_data = test_data[test_data.iloc[:, 1] == "Class3"]
@@ -92,31 +92,31 @@ selected_class3_data = class3_data.sample(
 )
 test_data = pd.concat([extra_class3_data, selected_class3_data])
 
-# 数据预处理
+# data preprocessing
 scaler = StandardScaler()
 scaler.fit(train_data.iloc[:, 2:])
 test_data_normalized = scaler.transform(test_data.iloc[:, 2:])
 test_data.iloc[:, 2:] = test_data_normalized
 
-# 创建训练集和测试集的 Dataset
+# Create training sets and test sets of Dataset
 test_dataset = MyDataset(test_data)
 
-# 创建训练集和测试集的 DataLoader
+# Create training sets and test sets of DataLoader
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-# 加载resnet模型
+# load resnet model
 model = ResNet.resnet50(pretrained=False)
 model = model.cuda(device)
 
-# 循环加载pth文件进行测试
+# load pth files cyclically
 pth_files = sorted(glob.glob(os.path.join("checkpoints/", "*.pth")))
 logger.info(pth_files)
 results = []
 for pth_file in pth_files:
     model.load_state_dict(torch.load(pth_file))
-    # 开始训练
+    # Start training
     step_per_epoch = len(test_dataloader)
-    logger.info("#########################开始测试！###########################")
+    logger.info("######################### Start testing！###########################")
     logger.info("model:{}".format(pth_file))
     model.eval()
     test_acc = []
@@ -132,7 +132,7 @@ for pth_file in pth_files:
             logger.info(predictions)
             logger.info(labels)
             logger.info(acc.item())
-        # 记录日志
+        # logging
         test_acc.append(acc.item())
     test_acc = np.array(test_acc).mean()
     results.append(test_acc)
@@ -143,6 +143,6 @@ for pth_file in pth_files:
             test_acc,
         )
     )
-    logger.info("#########################测试完成！###########################")
+    logger.info("######################### Test completed！###########################")
 for i in range(len(results)):
     logger.info("{}:{}\n".format(pth_files[i], results[i]))
