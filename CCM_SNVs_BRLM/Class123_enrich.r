@@ -86,10 +86,10 @@ dev.off()
 
 #ego <- enrichGO(gene  = gene.df$ENTREZID,
 #                OrgDb         = org.Hs.eg.db,
-#                keyType       = 'ENTREZID',##指定gene id的类型
-#                ont           = "BP",##GO分类
+#                keyType       = 'ENTREZID',## gene id type
+#                ont           = "BP",## GO
 #                pAdjustMethod = "BH",
-#                pvalueCutoff  = 0.05,##设置阈值
+#                pvalueCutoff  = 0.05,## threshold
 #                qvalueCutoff  = 0.05,
 #                readable=TRUE)
 #write.csv(ego,file="ego_bp.csv")
