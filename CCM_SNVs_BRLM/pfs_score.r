@@ -17,13 +17,13 @@ data_gene_sub[which(data_gene_sub$V8%in%gene_GPT$V1),]$V2="Class1"
 #write.csv(data_gene_sub,file="res_CCM_Classify/Prediction_Class_sub.csv")
 colnames(data_gene_sub) <- c("ID","gene","class")
 data_gene_sub <- data_gene_sub[!duplicated(data_gene_sub$gene),]
-t1<-unique(data_gene_sub$gene) #构建行名
-t2<-unique(data_gene_sub$class) #构建列名
+t1<-unique(data_gene_sub$gene) # Construct a row names
+t2<-unique(data_gene_sub$class) # Construct column names
 datamatrix<-matrix(0,nrow(data_gene_sub),length(t2))
 rownames(datamatrix)<-t1
 colnames(datamatrix)<-t2
 for (i in 1:nrow(data_gene_sub)) {
-  datamatrix[data_gene_sub[i,2],data_gene_sub[i,3]]<-1 #对应位置打上1
+  datamatrix[data_gene_sub[i,2],data_gene_sub[i,3]]<-1 
 }
 write.table(datamatrix,"res_CCM_Classify/mut_class_matrix.txt",sep = "\t",quote = FALSE)
 
@@ -48,7 +48,7 @@ genes_Class12_res=kegg_SYMBOL_hsa(genes_Class12$V8)@result
 write.csv(genes_Class12_res,file="res_CCM_Classify/genes_Class12_enrich_res.csv")
 
 
-### pfs_score 计算
+### pfs_score Calculation
 get_pfs_score<-function(mut_status,gene_Ucox_res,gene_symbol_Entrez,data.dir=NULL,organism="hsa",
                         verbose=TRUE,Entrez_ID=TRUE,gene_set=NULL){
   rownames(mut_status)<-gsub(pattern = "-",replacement = ".",rownames(mut_status))
