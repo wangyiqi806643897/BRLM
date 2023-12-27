@@ -3,7 +3,7 @@ import math
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 
-# 这个文件内包括6中不同的网络架构
+# This file includes 6 different network architectures
 __all__ = ["ResNet", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 
 # 每一种架构下都有训练好的可以用的参数文件
