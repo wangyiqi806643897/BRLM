@@ -101,7 +101,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, layers, num_classes=5):  # layers=参数列表 block选择不同的类
+    def __init__(self, block, layers, num_classes=5):  # layers=parameters, block select different classes
         self.inplanes = 64
         super(ResNet, self).__init__()
         self.line = nn.Linear(768, 3 * 128 * 128)
@@ -141,13 +141,12 @@ class ResNet(nn.Module):
         layers = []
         layers.append(
             block(self.inplanes, planes, stride, downsample)
-        )  # 每个blocks的第一个residual结构保存在layers列表中。
+        )  # The first residual structure is stored in layer list in each block.
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(
                 block(self.inplanes, planes)
-            )  # 该部分是将每个blocks的剩下residual 结构保存在layers列表中，这样就完成了一个blocks的构造。
-
+            )  # The rest residual structures
         return nn.Sequential(*layers)
 
     def forward(self, seq):
@@ -164,7 +163,7 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        x = x.view(x.size(0), -1)  # 将输出结果展成一行
+        x = x.view(x.size(0), -1)  # Spread the output into a line.
         x = self.fc(x)
 
         return x
