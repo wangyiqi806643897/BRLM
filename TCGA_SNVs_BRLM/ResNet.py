@@ -30,7 +30,7 @@ class BasicBlock(nn.Module):
 
     def __init__(
         self, inplanes, planes, stride=1, downsample=None
-    ):  # inplanes代表输入通道数，planes代表输出通道数。
+    ):  # inplanes indicates the number of input channels; planes indicates the number of output channels.
         super(BasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
