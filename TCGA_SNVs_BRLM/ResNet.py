@@ -6,7 +6,7 @@ import torch.utils.model_zoo as model_zoo
 # This file includes 6 different network architectures
 __all__ = ["ResNet", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 
-# 每一种架构下都有训练好的可以用的参数文件
+E# Each architecture owns a trained parameter file that can be used
 model_urls = {
     "resnet18": "https://s3.amazonaws.com/pytorch/models/resnet18-5c106cde.pth",
     "resnet34": "https://s3.amazonaws.com/pytorch/models/resnet34-333f7ec4.pth",
@@ -16,7 +16,7 @@ model_urls = {
 }
 
 
-# 常见的3x3卷积
+# Common 3x3 convolutions
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
     return nn.Conv2d(
@@ -24,7 +24,7 @@ def conv3x3(in_planes, out_planes, stride=1):
     )
 
 
-# 基础卷积块basicblock
+# The basicblock
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -59,9 +59,9 @@ class BasicBlock(nn.Module):
         return out
 
 
-# bottleneck对通道数进行压缩，再放大
+# Bottleneck: number of channels is compressed and then amplified
 class Bottleneck(nn.Module):
-    expansion = 4  # 输出通道数的倍乘
+    expansion = 4  # Multiplication of the output channel numbers
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(Bottleneck, self).__init__()
