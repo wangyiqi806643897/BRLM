@@ -3,10 +3,10 @@ import math
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 
-# 这个文件内包括6中不同的网络架构
+# This file contains 6 different network architectures
 __all__ = ["ResNet", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152"]
 
-# 每一种架构下都有训练好的可以用的参数文件
+# Each architecture has a trained parameter file that can be used
 model_urls = {
     "resnet18": "https://s3.amazonaws.com/pytorch/models/resnet18-5c106cde.pth",
     "resnet34": "https://s3.amazonaws.com/pytorch/models/resnet34-333f7ec4.pth",
@@ -16,7 +16,7 @@ model_urls = {
 }
 
 
-# 常见的3x3卷积
+# Common 3x3 convolutions
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
     return nn.Conv2d(
@@ -24,13 +24,13 @@ def conv3x3(in_planes, out_planes, stride=1):
     )
 
 
-# 基础卷积块basicblock
+# basicblock
 class BasicBlock(nn.Module):
     expansion = 1
 
     def __init__(
         self, inplanes, planes, stride=1, downsample=None
-    ):  # inplanes代表输入通道数，planes代表输出通道数。
+    ):  # inplanes indicates the number of input channels，planes indicates the number of output channels.
         super(BasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
@@ -59,10 +59,9 @@ class BasicBlock(nn.Module):
         return out
 
 
-# bottleneck对通道数进行压缩，再放大
+# bottleneck: The number of channels is compressed and then enlarged
 class Bottleneck(nn.Module):
-    expansion = 4  # 输出通道数的倍乘
-
+    expansion = 4  # Multiplication of output channels numbers
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
@@ -101,7 +100,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, layers, num_classes=5):  # layers=参数列表 block选择不同的类
+    def __init__(self, block, layers, num_classes=5):  # layers=parameters, block selects a different class
         self.inplanes = 64
         super(ResNet, self).__init__()
         self.line = nn.Linear(768, 3 * 128 * 128)
@@ -141,12 +140,12 @@ class ResNet(nn.Module):
         layers = []
         layers.append(
             block(self.inplanes, planes, stride, downsample)
-        )  # 每个blocks的第一个residual结构保存在layers列表中。
+        )  # The first residual structure in layer list for blocks
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(
                 block(self.inplanes, planes)
-            )  # 该部分是将每个blocks的剩下residual 结构保存在layers列表中，这样就完成了一个blocks的构造。
+            )  # The rest residual structures
 
         return nn.Sequential(*layers)
 
@@ -164,7 +163,7 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        x = x.view(x.size(0), -1)  # 将输出结果展成一行
+        x = x.view(x.size(0), -1)  # Spread the output into a line
         x = self.fc(x)
 
         return x
